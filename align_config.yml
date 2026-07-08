@@ -6,7 +6,7 @@ object:
   dec: '+07:03:44.68'
 
 # I am including working dir in the yaml. Don't know if this is the correct practice. I want it to be used separately.
-working_dir: "/Users/anirbandutta/Projects/2002cx-light_curves/2024pxl/2024pxl/2025-11-04_stacked/"
+working_dir: "2025-11-04_stacked"
 
 configuration:
   config_sex: "configs/astromatic/config_sextractor.sex"
