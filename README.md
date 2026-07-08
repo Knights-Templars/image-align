@@ -17,3 +17,22 @@ pip install -e .
 ```
 image-align align_config.yml      
 ```
+
+### Detailed usage
+Edit the _config.yml_ file and give the diredtory path. 
+The directory should contain images taken with the same filter. 
+
+The fits file obtained after coaddition would be tagged with a suffix _coadd.fits_
+
+The configs for swarp are kept in `configs/astromatic`. 
+
+For more information on swarp, visit - 
+[Swarp](https://www.astromatic.net/software/swarp/)
+
+### Future developments
+```
+- Astrometry fine tuning.
+- tests.
+```
+
+This package is being developed for performing deep stacking of images. 
