@@ -36,4 +36,4 @@ For more information on swarp, visit -
 - logging.
 ```
 
-This package is being developed for performing deep stacking of images. 
+This package is being developed for performing deep stacking of images of supernovae in the late phase from ground based telescope. 
