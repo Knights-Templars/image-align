@@ -1,0 +1,37 @@
+#NOTE: This is not bulit for a pipeline. One has to store the required images (in .fits) for the same filter in a directory.
+# In the late phase one often takes one two or three separate epochs of imaging to stack them.
+object:
+  name: "SN2024pxl"
+  ra: '17:32:27.350' 
+  dec: '+07:03:44.68'
+
+# I am including working dir in the yaml. Don't know if this is the correct practice. I want it to be used separately.
+working_dir: "/Users/anirbandutta/Projects/2002cx-light_curves/2024pxl/2024pxl/2025-11-04_stacked/"
+
+configuration:
+  config_sex: "configs/astromatic/config_sextractor.sex"
+  param_sex: "configs/astromatic/default.param"
+  config_scamp: "configs/astromatic/config.scamp"
+  config_swarp: "configs/astromatic/config.swarp"
+
+ccd:
+  gain: 0.92
+  rmnoise: 7.27
+  pxscale: 0.384
+  naxis1: 2048
+  naxis2: 2048
+  datamax: 60000
+
+alignment:
+  method: "swarp"
+  resample: "Y"                       # If you don't need resampling just turn it off. For example you want to coadd images taken from the same system without any rotation, translation.
+  resampling_type: "LANCZOS3" 
+  subtract_background: "Y"           # Do not use background subtraction until needed. 
+  resample_suffix: "_resample.fits"
+  pixel_scale_type: "MANUAL"
+
+combine:
+  coadd: "Y"
+  combine_type: "MEDIAN"          # Future versions will have weights to combine. Swarp supports weights.
+  coadded_suffix: "_coadd.fits"
+

@@ -1,0 +1,22 @@
+[project]
+name="image-align"
+version="1.0.0"
+description="Astronomical image alignment, coaddition"
+readme="README.md"
+requires-python=">3.10"
+
+authors =[
+    {name = "Anirban Dutta", email ="anirbaniamdutta@gmail.com"}
+]
+
+dependencies =[
+    "astropy>=6.0",
+    "numpy>=2.0",
+    "PyYAML>=6.0",
+]
+
+[project.scripts]
+image-align = "imagealign.cli:main"
+
+[tools.setuptools.packages.find]
+where = ["src"]

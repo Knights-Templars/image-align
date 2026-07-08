@@ -1,0 +1,2 @@
+[console_scripts]
+image-align = imagealign.cli:main

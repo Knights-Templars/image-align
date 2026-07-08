@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: image-align
+Version: 1.0.0
+Summary: Astronomical image alignment, coaddition
+Author-email: Anirban Dutta <anirbaniamdutta@gmail.com>
+Requires-Python: >3.10
+Description-Content-Type: text/markdown
+Requires-Dist: astropy>=6.0
+Requires-Dist: numpy>=2.0
+Requires-Dist: PyYAML>=6.0
