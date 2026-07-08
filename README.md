@@ -6,7 +6,20 @@ The code uses swarp to resample the images and coadd.
 </p>
 
 
+
+
 ### Installation
+
+For a mac , install swarp with 
+
+```
+sudo port install swarp
+```
+
+For linux based systems, consult the detailed installation in their manual.
+
+After swarp install - 
+
 ```
 pip install -e .
 
