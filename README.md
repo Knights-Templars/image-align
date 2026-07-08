@@ -33,6 +33,7 @@ For more information on swarp, visit -
 ```
 - Astrometry fine tuning.
 - tests.
+- logging.
 ```
 
 This package is being developed for performing deep stacking of images. 
