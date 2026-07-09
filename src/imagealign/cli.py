@@ -14,6 +14,8 @@ def clean_previous_outputs(output_dir):
         "*_coadd_weight.fits",
         "*.list",
         "log.INFO",
+        "*_resample.fits",
+        "*_resample.weight.fits",
     ]
 
     for pattern in patterns:
@@ -33,7 +35,7 @@ def main():
 
     wdir = config.working_dir
     clean_previous_outputs(wdir)
-    
+
     logger = setup_logger(wdir)
     logger.info("Starting image-align")
 

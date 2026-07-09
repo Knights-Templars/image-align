@@ -1,6 +1,7 @@
 import subprocess
 from pathlib import Path
 from astropy.io import fits
+from .util import get_center
 import logging
 
 
@@ -23,7 +24,7 @@ def get_name(image):
 
 
 
-def run_swarp(images, config):
+def run_swarp(images, config, use_image_center=True):
 
     files_list = config.working_dir / "coaddition.list"
     name = get_name(images[0])
@@ -32,6 +33,9 @@ def run_swarp(images, config):
         for image in images:
             f.write(f"{image}\n")
 
+    (ra_cent, dec_cent) = get_center(images[0])
+
+    logger.info(f"The central sky coordinates are RA: {ra_cent} and DEC: {dec_cent}")
 
     # Make it explicit for understanding
     config_swarp = config.configuration_setup.config_swarp
@@ -41,8 +45,12 @@ def run_swarp(images, config):
     weight_out_file = config.working_dir / weight_out_name
 
     #object
-    ra = str(config.object.ra)
-    dec = str(config.object.dec)
+    if use_image_center:
+        ra = ra_cent
+        dec = dec_cent
+    else:
+        ra = str(config.object.ra)
+        dec = str(config.object.dec)
 
     # ccd
     pxscale = str(config.ccd.pxscale)
@@ -60,6 +68,12 @@ def run_swarp(images, config):
     # combine
     coadd = config.combine.coadd
     combine_type = config.combine.combine_type
+
+    # This hack is for making sure we can test both automatic and fixed image size
+    if config.align.image_size == "0":
+        image_size = str(0)
+    elif config.align.image_size == "1":
+        image_size = f"{naxis1},{naxis2}"
 
     cmd = [
         "swarp",
@@ -81,7 +95,7 @@ def run_swarp(images, config):
         "-PIXEL_SCALE",
         pxscale,
         "-IMAGE_SIZE",
-        f"{naxis1},{naxis2}",
+        image_size,
         "-RESAMPLE",
         resample,
         "-RESAMPLE_SUFFIX",
@@ -93,7 +107,9 @@ def run_swarp(images, config):
         "-SATLEV_DEFAULT",
         datamax,
         "-SUBTRACT_BACK",
-        subtract_bkg
+        subtract_bkg,
+        "-RESAMPLE_DIR",
+        config.working_dir,
         ]
     
     logger.info(f"Executing: %s", " ".join(map(str, cmd)))

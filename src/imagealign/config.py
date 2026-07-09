@@ -26,6 +26,7 @@ class Align:
     subtract_background: str
     resample_suffix: str
     pixel_scale_type: str
+    image_size: str
 
 @dataclass
 class Combine:
