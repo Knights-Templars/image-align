@@ -43,10 +43,9 @@ For more information on swarp, visit -
 [Swarp](https://www.astromatic.net/software/swarp/)
 
 ### Future developments
-```
-- Astrometry fine tuning.
-- tests.
+
+- [] Astrometry fine tuning.
+- [] tests.
 - [x] logging.
-```
 
 This package is being developed for performing deep stacking of images of supernovae in the late phase from ground based telescope. 
