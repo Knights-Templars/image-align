@@ -1,6 +1,10 @@
 import subprocess
 from pathlib import Path
 from astropy.io import fits
+import logging
+
+
+logger = logging.getLogger("imagealign")
 
 
 def get_name(image):
@@ -91,8 +95,8 @@ def run_swarp(images, config):
         "-SUBTRACT_BACK",
         subtract_bkg
         ]
-    #print("Running command:")
-    #print(" ".join(cmd))
+    
+    logger.info(f"Executing: %s", " ".join(map(str, cmd)))
 
     subprocess.run(cmd, check=True)
 

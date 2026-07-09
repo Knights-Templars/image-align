@@ -4,6 +4,7 @@ from pathlib import Path
 from .config import load_config
 from .dependencies import check_swarp
 from .alignment import run_swarp
+from .logger import setup_logger
 
 def clean_previous_outputs(output_dir):
 
@@ -11,7 +12,8 @@ def clean_previous_outputs(output_dir):
     patterns = [
         "*_coadd.fits",
         "*_coadd_weight.fits",
-        "*.list"
+        "*.list",
+        "log.INFO",
     ]
 
     for pattern in patterns:
@@ -27,13 +29,22 @@ def main():
     )
 
     args = parser.parse_args()
-
-    check_swarp()
-
     config = load_config(args.config)
+
     wdir = config.working_dir
     clean_previous_outputs(wdir)
+    
+    logger = setup_logger(wdir)
+    logger.info("Starting image-align")
+
+    logger.info("Checking swarp installation")
+    check_swarp()
+
     images = list(sorted(wdir.glob("*.fits")))
+
+    logger.info(f"Collected {len(images)} files for stacking")
+
+    logger.info("Running swarp")
     run_swarp(images, config)
 
 
