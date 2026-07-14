@@ -5,6 +5,8 @@ from .config import load_config
 from .dependencies import check_swarp
 from .alignment import run_swarp
 from .logger import setup_logger
+from .gaia_catalog import save_catalog
+from .util import get_center
 
 def clean_previous_outputs(output_dir):
 
@@ -16,6 +18,7 @@ def clean_previous_outputs(output_dir):
         "log.INFO",
         "*_resample.fits",
         "*_resample.weight.fits",
+        "gaia*"
     ]
 
     for pattern in patterns:
@@ -28,6 +31,13 @@ def main():
     parser.add_argument(
         "config",
         help="YAML Configuration File"
+    )
+
+    parser.add_argument(
+        "--gaia",
+        "-g",
+        action="store_true",
+        help="Query gaia and generate catalog as ldac and ascii" 
     )
 
     args = parser.parse_args()
@@ -48,6 +58,11 @@ def main():
 
     logger.info("Running swarp")
     run_swarp(images, config)
+
+
+    if args.gaia:
+        (ra_cent, dec_cent) = get_center(images[0])
+        save_catalog(ra_cent, dec_cent, 0.1, 10, 20, catname=wdir)
 
 
 if __name__ == "__main__":
