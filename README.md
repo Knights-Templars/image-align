@@ -30,6 +30,10 @@ pip install -e .
 ```
 image-align align_config.yml      
 ```
+If you need precise aligning 
+```
+image-align align_config.yml --gaia --sex --scamp
+```
 
 ### Detailed usage
 Edit the _config.yml_ file and give the diredtory path. 
