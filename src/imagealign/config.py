@@ -27,6 +27,7 @@ class Align:
     resample_suffix: str
     pixel_scale_type: str
     image_size: str
+    precise_align: bool
 
 @dataclass
 class Combine:

@@ -48,7 +48,7 @@ For more information on swarp, visit -
 
 ### Future developments
 
-- [] Astrometry fine tuning.
+- [x] Astrometry fine tuning.
 - [] tests.
 - [x] logging.
 - [] Add type hinting.
