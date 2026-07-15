@@ -23,7 +23,6 @@ def get_name(image):
     return name
 
 
-
 def run_swarp(images, config, use_image_center=True):
 
     files_list = config.working_dir / "coaddition.list"
