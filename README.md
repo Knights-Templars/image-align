@@ -6,24 +6,49 @@ The code uses swarp to resample the images and coadd.
 </p>
 
 
-
-
 ### Installation
 
-For a mac , install swarp with 
+```
+git clone https://github.com/Knights-Templars/image-align.git
+cd image-align
+pip install -e .
+```
+
+Alternatively, if you have github SSH configured -
+```
+git clone git@github.com:Knights-Templars/image-align.git
+cd image-align
+pip install -e .
+```
+
+### Requirements 
+
+- [Swarp](https://www.astromatic.net/software/swarp/).
+- [SExtractor](https://www.astromatic.net/software/sextractor/).
+- [SCAMP](https://www.astromatic.net/software/scamp/).
+
+### Detailed Installation
+
+For a mac , install `swarp` with 
 
 ```
 sudo port install swarp
 ```
 
-For linux based systems, consult the detailed installation in their manual.
-
-After swarp install - 
+install `scamp` with -
 
 ```
-pip install -e .
-
+conda config --add channels conda-forge
+conda install -c conda-forge astromatic-scamp
 ```
+
+install `sextractor` with -
+```
+brew install sextractor
+```
+
+If macports, brew does not have astromatic-suite consult their documentation for installation.
+
 
 ### Usage
 
