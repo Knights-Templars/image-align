@@ -30,7 +30,7 @@ pip install -e .
 ```
 image-align align_config.yml      
 ```
-If you need precise aligning, make sure to use `precise_align: False`
+If you need precise aligning, make sure to use `precise_align: True`
 ```
 image-align align_config.yml --gaia --sex --scamp
 ```
