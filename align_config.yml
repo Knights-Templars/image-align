@@ -4,7 +4,7 @@ object:
   name: "SN2024pxl"
   ra: '17:32:27.350' 
   dec: '+07:03:44.68'
-
+# Edit the path here.
 # I am including working dir in the yaml. Don't know if this is the correct practice. I want it to be used separately.
 working_dir: "2025-11-04_stacked"
 
@@ -26,9 +26,11 @@ alignment:
   method: "swarp"
   resample: "Y"                       # If you don't need resampling just turn it off. For example you want to coadd images taken from the same system without any rotation, translation.
   resampling_type: "LANCZOS3" 
-  subtract_background: "Y"           # Do not use background subtraction until needed. 
+  subtract_background: "N"           # Do not use background subtraction until needed. 
   resample_suffix: "_resample.fits"
   pixel_scale_type: "MANUAL"
+  image_size: "1"                   # image size "0" means AUTOMATIC and image size 1 means naxis1 naxis2
+  precise_align: False
 
 combine:
   coadd: "Y"

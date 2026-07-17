@@ -9,6 +9,7 @@ from .gaia_catalog import save_catalog
 from .util import get_center
 from .sextractor import run_sextractor
 from .scamp import run_scamp
+from .check_align import check_alignment
 
 def clean_previous_outputs(output_dir: Path, remove_gaia: bool = False):
 
@@ -21,7 +22,8 @@ def clean_previous_outputs(output_dir: Path, remove_gaia: bool = False):
         "*_resample.fits",
         "*_resample.weight.fits",
         "*.fits.ldac",
-        "*.head"
+        "*.head",
+        "*.png"
     ]
 
     if remove_gaia:
@@ -61,6 +63,12 @@ def main():
         "--scamp",
         action="store_true",
         help="Run Scamp to fine tune astrometry"
+    )
+
+    parser.add_argument(
+        "--check_align",
+        action="store_true",
+        help="Test Alignment"
     )
 
     args = parser.parse_args()
@@ -122,6 +130,12 @@ def main():
         logger.info("Running swarp")
         logger.info(f"Collected {len(images)} files for stacking")
         run_swarp(images, config)
+
+        if args.check_align:
+            resampled_images = list(sorted(wdir.glob("*_resample.fits")))
+            logger.info("Testing image alignment")
+            check_alignment(resampled_images, config)
+
 
 
 

@@ -21,7 +21,7 @@ def run_sextractor(images, config):
 
     for image_name in images:
 
-        catalog_name = config.working_dir / f"{image_name}"
+        catalog_name = config.working_dir / f"{image_name}.ldac"
         cmd = [
             "sex",
             image_name,

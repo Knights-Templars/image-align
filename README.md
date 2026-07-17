@@ -30,10 +30,16 @@ pip install -e .
 ```
 image-align align_config.yml      
 ```
-If you need precise aligning 
+If you need precise aligning, make sure to use `precise_align: False`
 ```
 image-align align_config.yml --gaia --sex --scamp
 ```
+If you want to generate diagnostic images 
+```
+ image-align align_config.yml --check_align
+ image-align align_config.yml --gaia --sex --scamp --check_align
+ ```
+
 
 ### Detailed usage
 Edit the _config.yml_ file and give the diredtory path. 
@@ -49,7 +55,7 @@ For more information on swarp, visit -
 ### Future developments
 
 - [x] Astrometry fine tuning.
-- [] tests.
+- [x] tests.
 - [x] logging.
 - [] Add type hinting.
 
