@@ -4,9 +4,9 @@ object:
   name: "SN2024pxl"
   ra: '17:32:27.350' 
   dec: '+07:03:44.68'
-
+# Edit the path here.
 # I am including working dir in the yaml. Don't know if this is the correct practice. I want it to be used separately.
-working_dir: "/Users/anirbandutta/Projects/2002cx-light_curves/2024pxl/2024pxl/2025-11-04_stacked/"
+working_dir: "2025-11-04_stacked"
 
 configuration:
   config_sex: "configs/astromatic/config_sextractor.sex"
@@ -30,7 +30,7 @@ alignment:
   resample_suffix: "_resample.fits"
   pixel_scale_type: "MANUAL"
   image_size: "1"                   # image size "0" means AUTOMATIC and image size 1 means naxis1 naxis2
-  precise_align: True
+  precise_align: False
 
 combine:
   coadd: "Y"
