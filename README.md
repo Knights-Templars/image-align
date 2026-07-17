@@ -57,6 +57,7 @@ For more information on swarp, visit -
 - [x] Astrometry fine tuning.
 - [x] tests.
 - [x] logging.
+- [] Flux conservation after resampling.
 - [] Add type hinting.
 
 This package is being developed for performing deep stacking of images of supernovae in the late phase from ground based telescope. 
