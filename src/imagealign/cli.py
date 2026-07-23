@@ -10,6 +10,8 @@ from .util import get_center
 from .sextractor import run_sextractor
 from .scamp import run_scamp
 from .check_align import check_alignment
+from .util import copy_header_keywords
+from .util import update_coadd_exptime
 
 def clean_previous_outputs(output_dir: Path, remove_gaia: bool = False):
 
@@ -36,7 +38,6 @@ def clean_previous_outputs(output_dir: Path, remove_gaia: bool = False):
         for file in output_dir.glob(pattern):
             file.unlink()
 
-    
 
 
 def main():
@@ -135,6 +136,20 @@ def main():
             resampled_images = list(sorted(wdir.glob("*_resample.fits")))
             logger.info("Testing image alignment")
             check_alignment(resampled_images, config)
+
+
+    coadd_files = list(wdir.glob("*_coadd.fits"))
+    coadd_file = coadd_files[0]
+
+    # update the keywords in the coadd file.
+    update_coadd_exptime(images, coadd_file)
+    copy_header_keywords(
+        images[0],
+        coadd_file,
+        config
+    )
+
+
 
 
 
