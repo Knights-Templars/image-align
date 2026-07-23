@@ -2,6 +2,10 @@ import numpy as np
 from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.table import Table
+from pathlib import Path
+import logging
+
+logger = logging.getLogger("imagealign")
 
 def read_data(fitsimage):
 
@@ -84,3 +88,122 @@ def get_table_from_ldac(filename, frame=1):
         frame = frame*2
     tbl = Table.read(filename, hdu=frame)
     return tbl
+
+
+def copy_header_keywords(
+    input_image: str | Path,
+    coadd_image: str | Path,
+    config,
+):
+    """
+    Copy selected FITS header keywords from an input image to the
+    final coadded image.
+
+    Parameters
+    ----------
+    input_image : str or Path
+        Reference input FITS image.
+    coadd_image : str or Path
+        Coadded FITS image produced by SWarp.
+    keywords : list of str
+        Header keywords to copy.
+    """
+
+
+    keywords = [
+    "DATE-OBS",
+    "OBJECT",
+    "FILTER",
+    "RA",
+    "DEC",
+    "RA_DEG",
+    "DEC_DEG",
+    "UT",
+    "GRISM",
+    "AIRMASS",
+    "TM_START",
+    "DATE-AVG",
+    "TIME-OBS",
+    "EXPOSURE",
+    "OBJCTRA",
+    "OBJCTDEC",
+    "JD",
+    "TELESCOP",
+    "INSTRUME",
+    "DETECTOR",
+    "CAMERA",
+    "JD-OBS",
+    "HJD-OBS",
+    "BJD-OBS",
+    "AZIMUTH",
+    "ALTITUDE",
+    "HA",
+    "DATE",
+    "UT",
+    "FWHM",
+    "ZMAG",
+    "PA"
+    ]
+
+    with fits.open(input_image) as hdul_in, fits.open(
+        coadd_image, mode="update"
+    ) as hdul_out:
+
+        in_hdr = hdul_in[0].header
+        out_hdr = hdul_out[0].header
+
+        for key in keywords:
+            if key in in_hdr:
+                out_hdr[key] = (in_hdr[key], in_hdr.comments[key])
+                logger.info("Copied keyword %s = %s", key, in_hdr[key])
+            else:
+                logger.warning("Keyword %s not found in %s", key, input_image)
+
+        out_hdr["GAIN"] = config.ccd.gain
+        out_hdr["RMSNOISE"] = config.ccd.rmnoise
+
+        hdul_out.flush()
+
+    logger.info("Finished copying FITS keywords.")
+
+
+
+
+def update_coadd_exptime(images, coadd_file):
+
+    total_exptime = 0.0
+
+    for image in images:
+        with fits.open(image) as hdul:
+            exptime = hdul[0].header.get("EXPTIME", None)
+
+            if exptime is None:
+                logger.warning(
+                    "EXPTIME missing in %s, skipping",
+                    image
+                )
+                continue
+
+            total_exptime += exptime
+
+    with fits.open(coadd_file, mode="update") as hdul:
+        hdr = hdul[0].header
+
+        hdr["EXPTIME"] = (
+            total_exptime,
+            "Total exposure time of combined images"
+        )
+
+        hdr["NCOMBINE"] = (
+            len(images),
+            "Number of images combined"
+        )
+
+        hdul.flush()
+
+    logger.info(
+        "Updated %s: EXPTIME=%s s, NCOMBINE=%d",
+        coadd_file,
+        total_exptime,
+        len(images)
+    )
