@@ -12,6 +12,38 @@ from .scamp import run_scamp
 from .check_align import check_alignment
 from .util import copy_header_keywords
 from .util import update_coadd_exptime
+from .separate_filters import separate_by_filter
+
+
+def combine_by_filter(images, config, logger):
+    """Run SWarp and update coadd metadata independently for each filter."""
+
+    if not images:
+        raise ValueError(f"No FITS images found in {config.working_dir}")
+
+    filter_groups = separate_by_filter(images)
+    logger.info("Separated %d images into %d filter group(s)",
+                len(images), len(filter_groups))
+
+    coadd_files = []
+    for filter_name, filter_images in filter_groups.items():
+        logger.info("Combining %d image(s) for filter %s",
+                    len(filter_images), filter_name)
+        coadd_file = run_swarp(
+            filter_images,
+            config,
+            filter_name=filter_name,
+        )
+        update_coadd_exptime(filter_images, coadd_file)
+        copy_header_keywords(
+            filter_images[0],
+            coadd_file,
+            config,
+            filter_name=filter_name,
+        )
+        coadd_files.append(coadd_file)
+
+    return coadd_files
 
 def clean_previous_outputs(output_dir: Path, remove_gaia: bool = False):
 
@@ -107,7 +139,7 @@ def main():
         images = list(sorted(wdir.glob("*.fits")))
         logger.info("Running swarp")
         logger.info(f"Collected {len(images)} files for stacking")
-        run_swarp(images, config)
+        combine_by_filter(images, config, logger)
 
         logger.info("Gaia catalogue made.")
         logger.info("Ran SExtractor.")
@@ -130,29 +162,12 @@ def main():
         images = list(sorted(wdir.glob("*.fits")))
         logger.info("Running swarp")
         logger.info(f"Collected {len(images)} files for stacking")
-        run_swarp(images, config)
+        combine_by_filter(images, config, logger)
 
         if args.check_align:
             resampled_images = list(sorted(wdir.glob("*_resample.fits")))
             logger.info("Testing image alignment")
             check_alignment(resampled_images, config)
-
-
-    coadd_files = list(wdir.glob("*_coadd.fits"))
-    coadd_file = coadd_files[0]
-
-    # update the keywords in the coadd file.
-    update_coadd_exptime(images, coadd_file)
-    copy_header_keywords(
-        images[0],
-        coadd_file,
-        config
-    )
-
-
-
-
-
 
 if __name__ == "__main__":
     main()
