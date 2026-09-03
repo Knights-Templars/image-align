@@ -94,6 +94,7 @@ def copy_header_keywords(
     input_image: str | Path,
     coadd_image: str | Path,
     config,
+    filter_name: str | None = None,
 ):
     """
     Copy selected FITS header keywords from an input image to the
@@ -161,6 +162,8 @@ def copy_header_keywords(
 
         out_hdr["GAIN"] = config.ccd.gain
         out_hdr["RMSNOISE"] = config.ccd.rmnoise
+        if filter_name is not None:
+            out_hdr["FILTER"] = (filter_name, "Filter of combined images")
 
         hdul_out.flush()
 
@@ -172,19 +175,39 @@ def copy_header_keywords(
 def update_coadd_exptime(images, coadd_file):
 
     total_exptime = 0.0
+    jd_values = []
+    observation_metadata = []
 
-    for image in images:
+    for index, image in enumerate(images, start=1):
         with fits.open(image) as hdul:
-            exptime = hdul[0].header.get("EXPTIME", None)
+            header = hdul[0].header
+            exptime = header.get("EXPTIME")
+            jd = header.get("JD")
+            date_obs = header.get("DATE-OBS")
+
+            observation_metadata.append((index, image, jd, date_obs))
 
             if exptime is None:
                 logger.warning(
                     "EXPTIME missing in %s, skipping",
                     image
                 )
-                continue
+            else:
+                total_exptime += exptime
 
-            total_exptime += exptime
+            if jd is None:
+                logger.warning("JD missing in %s, excluding from MEANJD", image)
+            else:
+                try:
+                    jd_values.append(float(jd))
+                except (TypeError, ValueError):
+                    logger.warning(
+                        "Invalid JD value %r in %s, excluding from MEANJD",
+                        jd,
+                        image,
+                    )
+
+    mean_jd = float(np.mean(jd_values)) if jd_values else None
 
     with fits.open(coadd_file, mode="update") as hdul:
         hdr = hdul[0].header
@@ -199,11 +222,43 @@ def update_coadd_exptime(images, coadd_file):
             "Number of images combined"
         )
 
+        if mean_jd is not None:
+            hdr["MEANJD"] = (
+                mean_jd,
+                "Mean JD of the combined images"
+            )
+        else:
+            logger.warning("No valid JD values; MEANJD not written to %s", coadd_file)
+
+        for index, image, jd, date_obs in observation_metadata:
+            hdr[f"IMAGE_{index}"] = (
+                Path(image).name,
+                f"Input image {index} used in coadd",
+            )
+
+            if jd is not None:
+                hdr[f"JD_{index}"] = (jd, f"JD of input image {index}")
+            else:
+                logger.warning("JD missing in %s; JD_%d not written", image, index)
+
+            if date_obs is not None:
+                hdr[f"DATE_OBS_{index}"] = (
+                    date_obs,
+                    f"DATE-OBS of input image {index}",
+                )
+            else:
+                logger.warning(
+                    "DATE-OBS missing in %s; DATE_OBS_%d not written",
+                    image,
+                    index,
+                )
+
         hdul.flush()
 
     logger.info(
-        "Updated %s: EXPTIME=%s s, NCOMBINE=%d",
+        "Updated %s: EXPTIME=%s s, NCOMBINE=%d, MEANJD=%s",
         coadd_file,
         total_exptime,
-        len(images)
+        len(images),
+        mean_jd,
     )

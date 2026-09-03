@@ -8,25 +8,24 @@ import logging
 logger = logging.getLogger("imagealign")
 
 
-def get_name(image):
+def get_name(image, filter_name=None):
 
-    hdul = fits.open(image)
-    header = hdul[0].header
+    header = fits.getheader(image, 0)
     date = header['DATE-OBS']
-    filter = header['FILTER']
+    if filter_name is None:
+        filter_name = str(header['FILTER']).strip().split("_", 1)[0]
 
     date = date.split('T')[0]
-    filter = filter.split("_")[0]
 
-    name = date + "_" + filter
+    name = date + "_" + filter_name
 
     return name
 
 
-def run_swarp(images, config, use_image_center=True):
+def run_swarp(images, config, use_image_center=True, filter_name=None):
 
-    files_list = config.working_dir / "coaddition.list"
-    name = get_name(images[0])
+    files_list = config.working_dir / f"coaddition_{filter_name}.list"
+    name = get_name(images[0], filter_name=filter_name)
 
     with open(files_list, "w") as f:
         for image in images:
@@ -110,11 +109,9 @@ def run_swarp(images, config, use_image_center=True):
         "-RESAMPLE_DIR",
         config.working_dir,
         ]
-    
+
     logger.info(f"Executing: %s", " ".join(map(str, cmd)))
 
     subprocess.run(cmd, check=True)
 
-
-
-    
+    return output_file
